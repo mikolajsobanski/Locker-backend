@@ -94,12 +94,12 @@ def updateProduct(request,pk):
     product.condition = data['condition']
     product.location = data['location']
     product.phoneNumber = data['phoneNumber']
-    product.descripption = data['description']
-    product.category = data['category']
+    product.descripption = data['descripption']
+    #product.category = data['category']
     product.image = request.FILES.get('image')
-    product.image2 = data['selectedImage2']
-    product.image3 = data['selectedImage3']
-    product.image4 = data['selectedImage4']
+    product.image2 = data['image2']
+    product.image3 = data['image3']
+    product.image4 = data['image4']
     product.save()
     serializer = ProductSerializer(product, many=False)
     return Response(serializer.data)
