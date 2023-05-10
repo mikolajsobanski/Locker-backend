@@ -96,10 +96,10 @@ def updateProduct(request,pk):
     product.phoneNumber = data['phoneNumber']
     product.descripption = data['descripption']
     #product.category = data['category']
-    product.image = request.FILES.get('image')
-    product.image2 = data['image2']
-    product.image3 = data['image3']
-    product.image4 = data['image4']
+    #product.image = request.FILES.get('image')
+    #product.image2 = data['image2']
+    #product.image3 = data['image3']
+    #product.image4 = data['image4']
     product.save()
     serializer = ProductSerializer(product, many=False)
     return Response(serializer.data)
@@ -114,9 +114,42 @@ def deleteProduct(request, pk):
 def uploadImage(request):
     data = request.data
     
-    product_id = data['product_id']
+    product_id = data['id']
     product = Product.objects.get(_id=product_id)
 
     product.image = request.FILES.get('image')
+    product.save()
+    return Response('Image was uploaded')
+
+@api_view(['POST'])
+def uploadImage2(request):
+    data = request.data
+    
+    product_id = data['id']
+    product = Product.objects.get(_id=product_id)
+
+    product.image2 = request.FILES.get('image2')
+    product.save()
+    return Response('Image was uploaded')
+
+@api_view(['POST'])
+def uploadImage3(request):
+    data = request.data
+    
+    product_id = data['id']
+    product = Product.objects.get(_id=product_id)
+
+    product.image3 = request.FILES.get('image3')
+    product.save()
+    return Response('Image was uploaded')
+
+@api_view(['POST'])
+def uploadImage4(request):
+    data = request.data
+    
+    product_id = data['id']
+    product = Product.objects.get(_id=product_id)
+
+    product.image4 = request.FILES.get('image4')
     product.save()
     return Response('Image was uploaded')
