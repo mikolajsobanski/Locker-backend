@@ -4,7 +4,7 @@ from base.views import product_views as views
 
 urlpatterns = [
     path('', views.getProducts, name="products"),
-    path('expensive/', views.getProductsHomeCarousel, name="expensive-products"),
+    path('price/', views.getProductsByPrice, name="price-products"),
     path('user/', views.getUserProducts, name="user-products"),
     path('create/', views.createProduct, name="product-create"),
     path('upload/', views.uploadImage, name="image-upload"),
