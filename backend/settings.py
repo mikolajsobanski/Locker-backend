@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'mptt',
+    'celery',
+    'django_celery_results',
 ]
 
 MIDDLEWARE = [
@@ -186,4 +188,27 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+## Email
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'locker.marketplace@gmail.com'
+EMAIL_HOST_PASSWORD = 'ovyappstpexwpbyq'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
+#celery
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'db+postgresql://mikolaj:DAWID1mikolaj1@localhost:5432/locker'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_WORKER_CANCEL_LONG_RUNNING_TASKS_ON_CONNECTION_LOSS = True
+CELERY_APP = 'backend'
+CELERY_TASK_DEFAULT_QUEUE = 'default'
+
+#kafka
+KAFKA_BOOTSTRAP_SERVERS = 'localhost:9092'
+KAFKA_TOPIC = 'my_topic'
 
