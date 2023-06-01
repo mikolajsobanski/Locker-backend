@@ -73,3 +73,11 @@ class Product(models.Model):
         value = self.title
         self.slug = slugify(value, allow_unicode=True)
       super().save(*args, **kwargs)
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null = True)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, null = True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.product.name}"
