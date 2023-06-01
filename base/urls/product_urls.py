@@ -6,6 +6,7 @@ urlpatterns = [
     path('', views.getProducts, name="products"),
     path('price/', views.getProductsByPrice, name="price-products"),
     path('user/', views.getUserProducts, name="user-products"),
+    path('favorite/', views.getFavorite, name="favorite-products"),
     path('create/', views.createProduct, name="product-create"),
     path('upload/', views.uploadImage, name="image-upload"),
     path('upload2/', views.uploadImage2, name="image2-upload"),
@@ -13,5 +14,7 @@ urlpatterns = [
     path('upload4/', views.uploadImage4, name="image4-upload"),
     path('<str:pk>/', views.getProduct, name="product"),
     path('delete/<str:pk>/', views.deleteProduct, name="product-delete"),
+    path('favorite/delete/<str:pk>/', views.deleteFavorite, name="favourite-delete"),
+    path('favorite/add/<str:pk1>/<str:pk2>/', views.addToFavorite, name="favorite-add"),
     path('update/<str:pk>/', views.updateProduct, name="product-update"),
 ]

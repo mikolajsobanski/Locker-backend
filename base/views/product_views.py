@@ -2,10 +2,10 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
+from django.contrib.auth.decorators import login_required
 
-
-from base.models import Product
-from base.models import Category
+from base.models import Product, Category, Favorite
+from django.contrib.auth.models import User
 
 from base.serializers import ProductSerializer, UserSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -173,3 +173,39 @@ def uploadImage4(request):
     product.image4 = request.FILES.get('image4')
     product.save()
     return Response('Image was uploaded')
+
+@api_view(['GET'])
+def getFavorite(request):
+    user = request.user.id
+    favorites = Favorite.objects.filter(user=user)
+    favorite_products = [favorite.product for favorite in favorites]
+    serializer = ProductSerializer(favorite_products, many=True)
+    return Response({'products': serializer.data})
+
+
+@api_view(['POST'])
+def addToFavorite(request, pk1, pk2):
+    user = User.objects.get(id=pk2)
+    product = Product.objects.get(_id=pk1)
+
+    existing_favorite = Favorite.objects.filter(user=user, product=product).first()
+
+    if existing_favorite:
+        return Response('Offer already in favorites.', status=400)
+
+    favorite = Favorite.objects.create(user=user, product=product)
+    favorite.save()
+    return Response('Product added to favorites.')
+
+@api_view(['DELETE'])
+def deleteFavorite(request, pk):
+    user = request.user
+    product = Product.objects.get(_id=pk)
+
+    favourite = Favorite.objects.filter(user=user, product=product).first()
+
+    if not favourite:
+        return Response('product is not in favorites.', status=400)
+
+    favourite.delete()
+    return Response('product removed from favorites.')
