@@ -21,24 +21,23 @@ def getProducts(request):
     query = request.query_params.get('keyword')
     if query == None:
         query = ''
-    products = Product.objects.order_by('-createdt')
-    paginator = Paginator(products, 8)
-    page = request.GET.get('page')
-    productsList = paginator.get_page(page)
+    products = Product.objects.filter(name__icontains=query).order_by('-createdt')
+    paginator = Paginator(products, 4)
+    page = request.query_params.get('page')
     try:
-        products = paginator.page(page)
+        productsList = paginator.page(page)
     except PageNotAnInteger:
-        products = paginator.page(1)
+        productsList = paginator.page(1)
     except EmptyPage:
-        products = paginator.page(paginator.num_pages)
+        productsList = paginator.page(paginator.num_pages)
 
     if page == None:
         page = 1
 
     page = int(page)
     
-    serializer = ProductSerializer(products, many=True)
-    return Response({'products': serializer.data, 'page': page })
+    serializer = ProductSerializer(productsList, many=True)
+    return Response({'products': serializer.data, 'page': page, 'pages':paginator.num_pages })
 
 @api_view(['GET'])
 def getProductsHomeCarousel(request):
@@ -56,9 +55,22 @@ def getProduct(request, pk):
 @api_view(['GET'])
 def getUserProducts(request):
      user = request.user
-     products = Product.objects.filter(user=user)
-     serializer = ProductSerializer(products, many=True)
-     return Response({'products': serializer.data})
+     products = Product.objects.filter(user=user).order_by('-createdt')
+     paginator = Paginator(products, 3)
+     page = request.query_params.get('page')
+     try:
+        productsList = paginator.page(page)
+     except PageNotAnInteger:
+        productsList = paginator.page(1)
+     except EmptyPage:
+        productsList = paginator.page(paginator.num_pages)
+
+     if page == None:
+        page = 1
+
+     page = int(page)
+     serializer = ProductSerializer(productsList, many=True)
+     return Response({'products': serializer.data, 'page': page, 'pages':paginator.num_pages })
 
 
 @api_view(['POST'])
@@ -74,10 +86,10 @@ def createProduct(request):
         location = data['location'],
         phoneNumber = data['phone'],
         
-        image = data['selectedImage1'],
-        image2 = data['selectedImage2'],
-        image3 = data['selectedImage3'],
-        image4 = data['selectedImage4'],
+        image = request.FILES.get('selectedImage1'),
+        image2 = request.FILES.get('selectedImage2'),
+        image3 = request.FILES.get('selectedImage3'),
+        image4 = request.FILES.get('selectedImage4'),
         descripption=data['textarea']
     )
 
