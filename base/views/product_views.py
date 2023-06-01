@@ -40,8 +40,15 @@ def getProducts(request):
     return Response({'products': serializer.data, 'page': page, 'pages':paginator.num_pages })
 
 @api_view(['GET'])
-def getProductsHomeCarousel(request):
-     products = Product.objects.order_by('-price')[0:5]
+def getProductsByPrice(self):
+     min_price = self.GET.get('min_price')
+     max_price = self.GET.get('max_price')
+
+     products = Product.objects.all()
+     if min_price:
+            products = products.filter(price__gte=min_price)
+     if max_price:
+            products = products.filter(price__lte=max_price)
      serializer = ProductSerializer(products, many=True)
      return Response({'products': serializer.data})
 
