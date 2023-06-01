@@ -12,8 +12,7 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-
+from base.tasks import product_updated
 
 @api_view(['GET'])
 def getProducts(request):
@@ -63,20 +62,21 @@ def getProduct(request, pk):
 def getUserProducts(request):
      user = request.user
      products = Product.objects.filter(user=user).order_by('-createdt')
-     paginator = Paginator(products, 3)
+     paginator = Paginator(products, 1)
      page = request.query_params.get('page')
      try:
-        productsList = paginator.page(page)
+         productsList = paginator.page(page)
      except PageNotAnInteger:
-        productsList = paginator.page(1)
+         productsList = paginator.page(1)
      except EmptyPage:
-        productsList = paginator.page(paginator.num_pages)
+         productsList = paginator.page(paginator.num_pages)
 
      if page == None:
-        page = 1
+         page = 1
 
      page = int(page)
-     serializer = ProductSerializer(productsList, many=True)
+    
+     serializer = ProductSerializer(products, many=True)
      return Response({'products': serializer.data, 'page': page, 'pages':paginator.num_pages })
 
 
@@ -121,6 +121,7 @@ def updateProduct(request,pk):
     #product.image4 = data['image4']
     product.save()
     serializer = ProductSerializer(product, many=False)
+    product_updated.delay(product._id)
     return Response(serializer.data)
 
 @api_view(['DELETE'])

@@ -16,6 +16,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth.hashers import make_password
 from rest_framework import status
 
+from base.tasks import user_created
+
+
 #from backend.base import serializers
 
 # Create your views here.
@@ -48,6 +51,7 @@ def registerUser(request):
 
         )
         serializer = UserSerializersWithToken(user, many=False)
+        user_created.delay(user.email, user.first_name)
         return Response(serializer.data)
     except:
         message = {'detail':'User with this email alerady exists'}
