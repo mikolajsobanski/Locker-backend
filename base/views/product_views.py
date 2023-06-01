@@ -63,17 +63,22 @@ def getUserProducts(request):
 
 @api_view(['POST'])
 def createProduct(request):
-    user = request.user
+    data = request.data
 
     product = Product.objects.create(
-        user=user,
-        name='Sample Name',
-        price=0,
-        brand='Sample Brand',
+        user=request.user,
+        name = data['name'],
+        price = data['price'],
+        brand = data['Brand'],
+        condition = data['Condition'],
+        location = data['location'],
+        phoneNumber = data['phone'],
         
-        condition='',
-        location = '',
-        descripption=''
+        image = data['selectedImage1'],
+        image2 = data['selectedImage2'],
+        image3 = data['selectedImage3'],
+        image4 = data['selectedImage4'],
+        descripption=data['textarea']
     )
 
     serializer = ProductSerializer(product, many=False)
@@ -88,9 +93,13 @@ def updateProduct(request,pk):
     product.brand = data['brand']
     product.condition = data['condition']
     product.location = data['location']
-    product.descripption = data['description']
     product.phoneNumber = data['phoneNumber']
+    product.descripption = data['description']
     product.category = data['category']
+    product.image = request.FILES.get('image')
+    product.image2 = data['selectedImage2']
+    product.image3 = data['selectedImage3']
+    product.image4 = data['selectedImage4']
     product.save()
     serializer = ProductSerializer(product, many=False)
     return Response(serializer.data)
@@ -100,3 +109,14 @@ def deleteProduct(request, pk):
     product = Product.objects.get(_id=pk)
     product.delete()
     return Response('Product Deleted')
+
+@api_view(['POST'])
+def uploadImage(request):
+    data = request.data
+    
+    product_id = data['product_id']
+    product = Product.objects.get(_id=product_id)
+
+    product.image = request.FILES.get('image')
+    product.save()
+    return Response('Image was uploaded')
